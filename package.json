@@ -1,6 +1,6 @@
 {
   "name": "Firefly",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -10,6 +10,9 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "appcenter": "2.5.0",
+    "appcenter-analytics": "2.5.0",
+    "appcenter-crashes": "2.5.0",
     "react": "16.9.0",
     "react-native": "0.61.2",
     "react-native-code-push": "^5.7.0"
