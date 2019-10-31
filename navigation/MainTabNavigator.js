@@ -42,7 +42,7 @@ SettingsStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name='edit'
+      name='settings'
     />
   ),
   tabBarOptions: {
