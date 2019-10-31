@@ -1,3 +1,4 @@
 <resources>
+	<string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">CHCuTIcd7JsuZ2qC1vGAJBt80Gbx0Y5GuOFnw</string>
     <string name="app_name">Firefly</string>
 </resources>
