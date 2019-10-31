@@ -257,7 +257,10 @@ export default class NewTransactionScreen extends React.Component {
 
     newOther = (name, type) => {
         this.storage.saveOther(name, type)
-            .then(other => this.setState({ other }))
+            .then(other => {
+                this.setState({ other });
+                this.toggleLocation(true);
+            })
             .catch(e => {
                 ToastAndroid.show('Could not create account.', ToastAndroid.SHORT);
                 this.setState({ other: null });

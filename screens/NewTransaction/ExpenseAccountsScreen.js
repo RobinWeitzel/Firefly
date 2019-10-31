@@ -104,11 +104,13 @@ export default class AssetAccountsScreen extends React.Component {
                 </View>
                 {this.newItem(showNewItem)}
                 <FlatList
+                    keyboardShouldPersistTaps={'always'}
                     data={close}
                     renderItem={({ item }) => <Item2 location={item} selected={this.selected} />}
                     keyExtractor={item => item.account.id.toString()}
                 />
                 <FlatList
+                    keyboardShouldPersistTaps={'always'}
                     data={account}
                     renderItem={({ item }) => <Item account={item} selected={this.selected} />}
                     keyExtractor={item => item.id.toString()}
