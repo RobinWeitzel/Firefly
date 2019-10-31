@@ -36,6 +36,8 @@ target 'Firefly' do
 
   pod 'CodePush', :path => '../node_modules/react-native-code-push'
 
+  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+
   target 'FireflyTests' do
     inherit! :search_paths
     # Pods for testing
