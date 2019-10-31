@@ -26,7 +26,7 @@ import {
 import codePush from "react-native-code-push";
 
 const App: () => React$Node = () => {
-  onButtonPress() {
+  const onButtonPress = () => {
     codePush.sync({
       updateDialog: true,
       installMode: codePush.InstallMode.IMMEDIATE
@@ -53,7 +53,7 @@ const App: () => React$Node = () => {
                 Edit <Text style={styles.highlight}>App.js</Text> to change this
                 screen and then come back to see your edits.
               </Text>
-              <TouchableOpacity onPress={this.onButtonPress}>
+              <TouchableOpacity onPress={onButtonPress}>
                 <Text>Check for updates</Text>
               </TouchableOpacity>
             </View>
