@@ -4,7 +4,7 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from "moment";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Storage from '../../helpers/Storage';
-import { getLocation } from '../../Helpers/Location';
+import { getLocation } from '../../helpers/Location';
 import { ScrollView } from 'react-native-gesture-handler';
 import Keyboard from '../../components/Keyboard';
 import { thisTypeAnnotation } from '@babel/types';
