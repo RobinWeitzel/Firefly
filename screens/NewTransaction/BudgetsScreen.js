@@ -47,11 +47,12 @@ export default class BudgetsScreen extends React.Component {
         const budgets = this.state.budgets.filter(b => this.search(b.name.toLowerCase(), this.state.search.toLowerCase()));
 
         return (
-        <ScrollView  style={{flex: 1}}>
+        <ScrollView  style={{flex: 1}} keyboardShouldPersistTaps={'always'}>
             <View style={{backgroundColor: "#F5F5F5", padding: 10}}>
                 <TextInput style={{fontSize: 20}} placeholder="Search Budgets" value={this.state.search} onChangeText={search => this.setState({ search })} />
             </View>
             <FlatList
+                keyboardShouldPersistTaps={'always'}
                 data={budgets}
                 renderItem={({ item }) => <Item budget={item} selected={this.selected}/>}
                 keyExtractor={item => item.id.toString()}
