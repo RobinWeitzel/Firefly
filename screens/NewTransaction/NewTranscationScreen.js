@@ -94,7 +94,8 @@ export default class NewTransactionScreen extends React.Component {
             assets: this.storage.getAccounts('asset'),
             expenses: this.storage.getAccounts('expense'),
             revenues: this.storage.getAccounts('revenue'),
-            budgets: this.storage.getBudgets()
+            budgets: this.storage.getBudgets(),
+            date: new Date()
         });
 
         getLocation().then(location => {
