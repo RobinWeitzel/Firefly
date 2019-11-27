@@ -51,7 +51,7 @@ export default class Keyboard extends React.Component {
                         <Icon name="backspace" size={32} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.placeholder} onPress={this.props.confirm}>
-                        <Icon name="check-circle" size={40} color='#009688' />
+                        <Icon name="check-circle" size={40} color='#3c8dbc' />
                     </TouchableOpacity>
                 </View>
             </View>

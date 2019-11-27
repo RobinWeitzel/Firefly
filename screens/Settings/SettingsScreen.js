@@ -33,7 +33,7 @@ export default class SettingsScreen extends React.Component {
                 <ScrollView style={{ marginBottom: 20 }}>
                     <TextInput autoCompleteType="off" autoCorrect={false} placeholder="API Token" value={this.state.token} style={{ fontSize: 20, textAlignVertical: "top" }} onChangeText={token => this.setState({ url: this.state.url, token: token })} multiline numberOfLines={6} />
                 </ScrollView>
-                <Button title="Save" color='#009688' onPress={this.save}></Button>
+                <Button title="Save" color='#3c8dbc' onPress={this.save}></Button>
             </View >
         );
     }

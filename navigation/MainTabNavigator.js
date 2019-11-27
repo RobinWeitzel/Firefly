@@ -32,7 +32,7 @@ NewTransactionStack.navigationOptions = {
     />
   ),
   tabBarOptions: {
-    activeTintColor: '#009688',
+    activeTintColor: '#3c8dbc',
     inactiveTintColor: '#ccc'
   }
 };
@@ -46,7 +46,7 @@ SettingsStack.navigationOptions = {
     />
   ),
   tabBarOptions: {
-    activeTintColor: '#009688',
+    activeTintColor: '#3c8dbc',
     inactiveTintColor: '#ccc'
   }
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppState, View, Text, TextInput, TouchableOpacity, Image, ToastAndroid, RefreshControl } from 'react-native';
+import { AppState, View, Text, TextInput, TouchableOpacity, Image, ToastAndroid, RefreshControl, Button } from 'react-native';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from "moment";
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -19,7 +19,7 @@ export default class NewTransactionScreen extends React.Component {
                         name={'my-location'}
                         size={24}
                         style={{ paddingRight: 10 }}
-                        color={navigation.getParam('storeLocation') ? '#009688' : '#ccc'}
+                        color={navigation.getParam('storeLocation') ? '#3c8dbc' : '#ccc'}
                     />
                 </TouchableOpacity>
             )
@@ -52,7 +52,8 @@ export default class NewTransactionScreen extends React.Component {
             date: new Date(),
             receipt: "",
             refreshing: false,
-            appState: AppState.currentState
+            appState: AppState.currentState,
+            showKeyboard: false
         };
 
         this.types = ["withdrawal", "deposit", "transfer"];
@@ -87,7 +88,7 @@ export default class NewTransactionScreen extends React.Component {
     }
 
     loadData = () => {
-        if(!this._mounted)
+        if (!this._mounted)
             return;
 
         this.setState({
@@ -99,7 +100,7 @@ export default class NewTransactionScreen extends React.Component {
         });
 
         getLocation().then(location => {
-            if(!this._mounted)
+            if (!this._mounted)
                 return;
 
             const nearby = this.storage.getNearby(location.coords.latitude, location.coords.longitude);
@@ -128,6 +129,7 @@ export default class NewTransactionScreen extends React.Component {
     }
 
     showDateTimePicker = () => {
+        this.setState({ showKeyboard: false });
         this.setState({ isDateTimePickerVisible: true });
     };
 
@@ -141,6 +143,7 @@ export default class NewTransactionScreen extends React.Component {
     };
 
     toggleType = () => {
+        this.setState({ showKeyboard: false });
         const type = (this.state.type + 1) % this.types.length;
         this.setState({ type, other: null, budget: null }, () => this.loadNearby());
         this.toggleLocation(false);
@@ -149,10 +152,11 @@ export default class NewTransactionScreen extends React.Component {
     toggleLocation = storeLocation => {
         storeLocation = storeLocation === undefined ? !this.state.storeLocation : storeLocation;
         this.setState({ storeLocation });
-        this.props.navigation.setParams({storeLocation});
+        this.props.navigation.setParams({ storeLocation });
     }
 
     assetClick = () => {
+        this.setState({ showKeyboard: false });
         this.props.navigation.navigate('Asset', { accounts: this.state.assets, selected: this.assetSelected });
     }
 
@@ -161,8 +165,9 @@ export default class NewTransactionScreen extends React.Component {
     }
 
     otherClick = () => {
+        this.setState({ showKeyboard: false });
         let type;
-        switch(this.state.type) {
+        switch (this.state.type) {
             case 0:
                 type = "expense";
                 break;
@@ -172,14 +177,14 @@ export default class NewTransactionScreen extends React.Component {
             case 2:
                 type = "asset";
                 break;
-        } 
+        }
 
         const close = this.state.nearby.filter(l => l.account.type === type);
         const closeIds = close.map(l => l.account.id);
 
         if (type === "expense")
             this.props.navigation.navigate('Expense', { accounts: this.state.expenses.filter(a => closeIds.indexOf(a.id) < 0), close: close, selected: this.otherSelected, newOther: this.newOther });
-        else if(type === "revenue")
+        else if (type === "revenue")
             this.props.navigation.navigate('Revenue', { accounts: this.state.revenues.filter(a => closeIds.indexOf(a.id) < 0), close: close, selected: this.otherSelected, newOther: this.newOther });
         else
             this.props.navigation.navigate('Asset', { accounts: this.state.assets, selected: this.otherAssetSelected });
@@ -213,6 +218,11 @@ export default class NewTransactionScreen extends React.Component {
     }
 
     keyboardConfirm = () => {
+        this.setState({ showKeyboard: false });
+    }
+
+    transactionConfirm = () => {
+        this.setState({ showKeyboard: false });
         if (this.state.asset === null || this.state.other === null || this.state.amount === 0)
             return;
 
@@ -229,12 +239,12 @@ export default class NewTransactionScreen extends React.Component {
             ]
         };
 
-        if(this.state.budget)
+        if (this.state.budget)
             data.transactions[0].budget_id = this.state.budget.id;
 
         let other = undefined;
-        
-        if(this.types[this.state.type] !== "transfer") {
+
+        if (this.types[this.state.type] !== "transfer") {
             other = {
                 id: this.state.other.id,
                 updated: new Date(),
@@ -268,6 +278,18 @@ export default class NewTransactionScreen extends React.Component {
             });
     }
 
+    keyboard = () => {
+        if (this.state.showKeyboard) {
+            return (
+                <View>
+                    <Keyboard style={{ flex: 1 }} onPress={this.keyboardPress} delete={this.keyboardDelete} confirm={this.keyboardConfirm} />
+                </View>
+            );
+        } else {
+            return null;
+        }
+    }
+
     render() {
         return (
             <View style={{ flex: 1 }}>
@@ -280,8 +302,8 @@ export default class NewTransactionScreen extends React.Component {
                         </TouchableOpacity>
                         <TouchableOpacity style={{ flex: 1, alignItems: "center" }} onPress={this.toggleType}>
                             <Icon
-                                name={this.state.type === 2 ? 'swap-horiz': 'trending-flat'}
-                                style= {{transform: [{ rotate: this.state.type === 1 ? '180deg' : '0deg' }]}}
+                                name={this.state.type === 2 ? 'swap-horiz' : 'trending-flat'}
+                                style={{ transform: [{ rotate: this.state.type === 1 ? '180deg' : '0deg' }] }}
                                 size={30}
                                 color={'#ccc'}
                             />
@@ -292,54 +314,58 @@ export default class NewTransactionScreen extends React.Component {
                             </Text>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.setState({ showKeyboard: true })}>
                         <Text style={{ color: this.colorTypes[this.state.type], fontSize: 40 }}>
                             {"€ " + this.state.amount.toFixed(2)}
                         </Text>
                     </TouchableOpacity>
                 </View>
-                <View style={{ flex: 1, flexDiction: "column", justifyContent: "space-between" }}>
-                    <ScrollView refreshControl={
+                <View style={{ flex: 1 }}>
+                    <ScrollView style={{flex: 1}} contentContainerStyle={{ flexGrow:1, padding: 20, flexDiction: "column", justifyContent: "space-between" }} refreshControl={
                         <RefreshControl
                             refreshing={this.state.refreshing}
                             onRefresh={this.reloadData}
                         />
                     }>
-                        <TouchableOpacity style={{ flexDirection: "row", justifyContent: "space-between", padding: 20, alignItems: "center" }} onPress={() => this.input.focus()}>
-                            <Text style={{ fontSize: 16, fontWeight: "bold" }}>Description</Text>
-                            <TextInput
-                                style={{ fontSize: 20, padding: 0 }}
-                                onChangeText={(description) => this.setState({ description })}
-                                value={this.state.description}
-                                ref={x => this.input = x}
+                        <View>
+                            <TouchableOpacity style={{ flexDirection: "row", justifyContent: "space-between", paddingBottom: 30, alignItems: "center" }} onPress={() => {this.setState({showKeyboard: false}); this.input.focus()}}>
+                                <Text style={{ fontSize: 16, fontWeight: "bold" }}>Description</Text>
+                                <TextInput
+                                    style={{ fontSize: 20, padding: 0 }}
+                                    onChangeText={(description) => this.setState({ description })}
+                                    value={this.state.description}
+                                    ref={x => this.input = x}
+                                />
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{ flexDirection: "row", justifyContent: "space-between", paddingBottom: 30, alignItems: "center" }} onPress={() => { this.setState({ showKeyboard: false }); this.props.navigation.navigate('Budget', { budgets: this.state.budgets, selected: this.budgetSelected }) }}>
+                                <Text style={{ fontSize: 16, fontWeight: "bold" }}>Budget</Text>
+                                <Text style={{ fontSize: 20 }}>{this.state.budget !== null ? this.state.budget.name : ""}</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{ flexDirection: "row", justifyContent: "space-between", paddingBottom: 30, alignItems: "center" }} onPress={() => { this.setState({ showKeyboard: false }); this.props.navigation.navigate('Camera', { selected: this.cameraSelected }) }}>
+                                <Text style={{ fontSize: 16, fontWeight: "bold" }}>Receipt</Text>
+                                <Image style={{ width: 50, height: 25, resizeMode: 'center' }} source={{ uri: `data:image/gif;base64,${this.state.receipt}` }} />
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{ flexDirection: "row", justifyContent: "space-between", paddingBottom: 30, alignItems: "center" }} onPress={this.showDateTimePicker}>
+                                <Text style={{ fontSize: 16, fontWeight: "bold" }}>Date</Text>
+                                <Text style={{ fontSize: 20 }}>{this.state.date.toLocaleDateString()}</Text>
+                            </TouchableOpacity>
+
+                            <DateTimePicker
+                                isVisible={this.state.isDateTimePickerVisible}
+                                onConfirm={this.handleDatePicked}
+                                onCancel={this.hideDateTimePicker}
+                                date={this.state.date}
                             />
-                        </TouchableOpacity>
+                        </View>
+                        <Button title="Save Transaction" color='#3c8dbc' onPress={this.transactionConfirm}></Button>
 
-                        <TouchableOpacity style={{ flexDirection: "row", justifyContent: "space-between", padding: 20, alignItems: "center" }} onPress={() => this.props.navigation.navigate('Budget', { budgets: this.state.budgets, selected: this.budgetSelected })}>
-                            <Text style={{ fontSize: 16, fontWeight: "bold" }}>Budget</Text>
-                            <Text style={{ fontSize: 20 }}>{this.state.budget !== null ? this.state.budget.name : ""}</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={{ flexDirection: "row", justifyContent: "space-between", padding: 20, alignItems: "center" }} onPress={() => this.props.navigation.navigate('Camera', { selected: this.cameraSelected })}>
-                            <Text style={{ fontSize: 16, fontWeight: "bold" }}>Receipt</Text>
-                            <Image style={{ width: 50, height: 25, resizeMode: 'center' }} source={{ uri: `data:image/gif;base64,${this.state.receipt}` }} />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={{ flexDirection: "row", justifyContent: "space-between", padding: 20, alignItems: "center" }} onPress={this.showDateTimePicker}>
-                            <Text style={{ fontSize: 16, fontWeight: "bold" }}>Date</Text>
-                            <Text style={{ fontSize: 20 }}>{this.state.date.toLocaleDateString()}</Text>
-                        </TouchableOpacity>
-
-                        <DateTimePicker
-                            isVisible={this.state.isDateTimePickerVisible}
-                            onConfirm={this.handleDatePicked}
-                            onCancel={this.hideDateTimePicker}
-                            date={this.state.date}
-                        />
                     </ScrollView>
-                    <View>
-                        <Keyboard style={{ flex: 1 }} onPress={this.keyboardPress} delete={this.keyboardDelete} confirm={this.keyboardConfirm} />
-                    </View>
+                    {
+                        this.keyboard()
+                    }
                 </View>
             </View>
         );
